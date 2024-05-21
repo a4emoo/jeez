@@ -1,0 +1,15 @@
+[project]
+name = "jeez"
+version = "0.1.0"
+description = "Add a short description here"
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tasks]
+
+[dependencies]
+python = ">=3.12.3,<3.13"
+pyyaml = ">=6.0.1,<6.1"
+py-cord = ">=2.5.0,<2.6"
+pynacl = ">=1.5.0,<1.6"
+ffmpeg = ">=7.0.0,<7.1"
