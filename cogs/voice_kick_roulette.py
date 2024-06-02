@@ -1,16 +1,19 @@
 import discord.ext.commands as commands
-from discord.ext.commands import Cog
 import os.path as path
 import os
 import asyncio
 import random
 import discord
 
+
 class VoiceKickRoulette(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.last_kick = None
-        self.sounds = os.listdir(path.join(os.getcwd(), "sounds", "voice_kick_roulette"))
+        self.sounds = os.listdir(
+            path.join(os.getcwd(), "sounds", "voice_kick_roulette")
+        )
+        self.bot.loop.create_task(self.kick_all_loop())
 
     # @commands.is_owner()
     @commands.command(name="ls")
@@ -21,9 +24,23 @@ class VoiceKickRoulette(commands.Cog):
         )
         await ctx.reply(sounds)
 
-    async def play_random_sound(self, vc: discord.VoiceClient, n: int = 1, prefix_include: str = None, prefix_exclude: str = None):
-        sounds = [s for s in self.sounds if s.startswith(prefix_include)] if prefix_include else self.sounds        
-        sounds = [s for s in sounds if not s.startswith(prefix_exclude)] if prefix_exclude else sounds
+    async def play_random_sound(
+        self,
+        vc: discord.VoiceClient,
+        n: int = 1,
+        prefix_include: str = None,
+        prefix_exclude: str = None,
+    ):
+        sounds = (
+            [s for s in self.sounds if s.startswith(prefix_include)]
+            if prefix_include
+            else self.sounds
+        )
+        sounds = (
+            [s for s in sounds if not s.startswith(prefix_exclude)]
+            if prefix_exclude
+            else sounds
+        )
         for _ in range(n):
             choise = random.choice(sounds)
             sounds.remove(choise)
@@ -38,6 +55,30 @@ class VoiceKickRoulette(commands.Cog):
                 ),
                 wait_finish=True,
             )
+
+    @commands.command(name="allahukbar")
+    async def kick_all_cmd(self, ctx: commands.Context):
+        await self.kick_all(ctx.author.voice.channel)
+
+    async def kick_all(self, voice_channel: discord.VoiceChannel):
+        """Kick all members from the voice channel."""
+        await voice_channel.connect()
+        voice_client = voice_channel.guild.voice_client
+        try:
+            await self.play_random_sound(voice_client, prefix_include="short")
+        except Exception as e:
+            await print(f"{e}")
+            await voice_client.disconnect()
+            return
+
+        members = voice_client.channel.members
+        for member in members:
+            if member != self.bot.user:
+                await member.move_to(None)
+                # await asyncio.sleep(0.1)
+
+        await asyncio.sleep(5)
+        await voice_client.disconnect()
 
     @commands.command(name="debosh")
     async def roulette(self, ctx: commands.Context):
@@ -66,18 +107,32 @@ class VoiceKickRoulette(commands.Cog):
             self.last_kick = member
             # await asyncio.sleep(random.randint(1, 60))
             await member.move_to(None)
-            await ctx.message.channel.send(f"хиххи хохо урод сосать рот молчать {member.mention}")
+            await ctx.message.channel.send(
+                f"хиххи хохо урод сосать рот молчать {member.mention}"
+            )
         else:
             await ctx.reply("уроды")
 
         await asyncio.sleep(5)
         await voice_client.disconnect()
 
-    @Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
-        if member == self.last_kick and after.channel is None:
-            await member.move_to(None)
-        
-    @Cog.listener()
-    async def on_ready(self):
-        print("Voice Kick Roulette cog loaded.")
+    # function that calls kick_all every 5 minutes
+    async def kick_all_loop(self):
+        await self.bot.wait_until_ready()
+        all_voice_channels = self.bot.get_all_channels()
+        voice_channels = [c for c in all_voice_channels if isinstance(c, discord.VoiceChannel)]
+        while not self.bot.is_closed():
+            await asyncio.sleep(random.randint(120, 900))
+            # await self.bot.get_channel(1113155133791027202).send("хихихи хохохо")
+            # kick all members from a voice with the most members
+            voice_channels.sort(key=lambda c: len(c.members), reverse=True)
+            if voice_channels:
+                # if random.random() < -0.1:
+                #     await self.kick_all(voice_channels[0])
+                # else:
+                vc = await voice_channels[0].connect()
+                # await self.play_random_sound(vc, 1, prefix_include="short")
+                await asyncio.sleep(1)
+                await vc.disconnect()
+
+            # await asyncio.sleep(random.randint(300, 1800))

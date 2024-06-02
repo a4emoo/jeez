@@ -50,6 +50,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/python-3.12.3-h2628c8c_0_cpython.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/python_abi-3.12-4_cp312.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/pyyaml-6.0.1-py312he70551f_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/ruff-0.4.4-py312h7a6832a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.16.0-pyh6c4a22f_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/win-64/svt-av1-2.1.0-he0c23c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/tk-8.6.13-h5226925_1.conda
@@ -849,6 +850,24 @@ packages:
   license_family: MIT
   size: 167932
   timestamp: 1695374097139
+- kind: conda
+  name: ruff
+  version: 0.4.4
+  build: py312h7a6832a_0
+  subdir: win-64
+  url: https://conda.anaconda.org/conda-forge/win-64/ruff-0.4.4-py312h7a6832a_0.conda
+  sha256: ca264b4933ccc0d4d24c07960415d82c68776d56313cd5a95731e6a0d07984b7
+  md5: 445d9c0ed18d9dc2521c87a4d723189c
+  depends:
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - ucrt >=10.0.20348.0
+  - vc >=14.2,<15
+  - vc14_runtime >=14.29.30139
+  license: MIT
+  license_family: MIT
+  size: 6170392
+  timestamp: 1715291305605
 - kind: conda
   name: six
   version: 1.16.0
